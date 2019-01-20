@@ -57,10 +57,49 @@ function solve2(param) {
   return findFirstDuplicateSum(undefined, undefined, undefined, List.map(Caml_format.caml_int_of_string, frequencies));
 }
 
+function generateSumsStream(frequencies) {
+  var asStream = Utils$Aoc2018.Stream[/* ofList */2](frequencies);
+  var frequenciesCycle = Utils$Aoc2018.Stream[/* cycle */3](asStream);
+  return Utils$Aoc2018.Stream[/* scanLeft */4]((function (prim, prim$1) {
+                return prim + prim$1 | 0;
+              }), 0, frequenciesCycle);
+}
+
+function findFirstDuplicate(stream) {
+  var _visited = Utils$Aoc2018.IntSet[/* empty */0];
+  var _toVisit = stream;
+  while(true) {
+    var toVisit = _toVisit;
+    var visited = _visited;
+    var match = Utils$Aoc2018.Stream[/* hd */0](toVisit);
+    if (match !== undefined) {
+      var a = match;
+      var match$1 = Curry._2(Utils$Aoc2018.IntSet[/* mem */2], a, visited);
+      if (match$1) {
+        return a;
+      } else {
+        _toVisit = Utils$Aoc2018.Stream[/* tl */1](toVisit);
+        _visited = Curry._2(Utils$Aoc2018.IntSet[/* add */3], a, visited);
+        continue ;
+      }
+    } else {
+      return undefined;
+    }
+  };
+}
+
+function solve2Streams(param) {
+  var frequencies = Utils$Aoc2018.inputFileToList(day1Input);
+  return findFirstDuplicate(generateSumsStream(List.map(Caml_format.caml_int_of_string, frequencies)));
+}
+
 exports.day1Input = day1Input;
 exports.parseFrequencies = parseFrequencies;
 exports.sumFrequencies = sumFrequencies;
 exports.solve1 = solve1;
 exports.findFirstDuplicateSum = findFirstDuplicateSum;
 exports.solve2 = solve2;
+exports.generateSumsStream = generateSumsStream;
+exports.findFirstDuplicate = findFirstDuplicate;
+exports.solve2Streams = solve2Streams;
 /* Utils-Aoc2018 Not a pure module */

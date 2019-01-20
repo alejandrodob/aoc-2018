@@ -7,6 +7,7 @@ var List = require("bs-platform/lib/js/list.js");
 var $$Array = require("bs-platform/lib/js/array.js");
 var Curry = require("bs-platform/lib/js/curry.js");
 var Caml_obj = require("bs-platform/lib/js/caml_obj.js");
+var Caml_option = require("bs-platform/lib/js/caml_option.js");
 
 function readFile(path) {
   return Fs.readFileSync(path, "utf8");
@@ -35,8 +36,96 @@ var compare = Caml_obj.caml_compare;
 
 var IntSet = $$Set.Make(/* module */[/* compare */compare]);
 
+function hd(param) {
+  if (param) {
+    return Caml_option.some(param[0]);
+  }
+  
+}
+
+function tl(param) {
+  if (param) {
+    return Curry._1(param[1], /* () */0);
+  } else {
+    return /* Done */0;
+  }
+}
+
+function ofList(list) {
+  if (list) {
+    var tail = list[1];
+    return /* Stream */[
+            list[0],
+            (function (param) {
+                return ofList(tail);
+              })
+          ];
+  } else {
+    return /* Done */0;
+  }
+}
+
+function cycle(stream) {
+  var c = function (complete, _remaining) {
+    while(true) {
+      var remaining = _remaining;
+      var match = hd(remaining);
+      if (match !== undefined) {
+        return /* Stream */[
+                Caml_option.valFromOption(match),
+                (function(remaining){
+                return function (param) {
+                  return c(complete, tl(remaining));
+                }
+                }(remaining))
+              ];
+      } else {
+        _remaining = complete;
+        continue ;
+      }
+    };
+  };
+  return c(stream, stream);
+}
+
+function scanLeft$1(fn, initial, stream) {
+  var match = hd(stream);
+  if (match !== undefined) {
+    var head = Caml_option.valFromOption(match);
+    return /* Stream */[
+            Curry._2(fn, initial, head),
+            (function (param) {
+                return scanLeft$1(fn, Curry._2(fn, initial, head), tl(stream));
+              })
+          ];
+  } else {
+    return /* Done */0;
+  }
+}
+
+function take(n, stream) {
+  if (n !== 0) {
+    return /* :: */[
+            hd(stream),
+            take(n - 1 | 0, tl(stream))
+          ];
+  } else {
+    return /* [] */0;
+  }
+}
+
+var Stream = /* module */[
+  /* hd */hd,
+  /* tl */tl,
+  /* ofList */ofList,
+  /* cycle */cycle,
+  /* scanLeft */scanLeft$1,
+  /* take */take
+];
+
 exports.readFile = readFile;
 exports.inputFileToList = inputFileToList;
 exports.scanLeft = scanLeft;
 exports.IntSet = IntSet;
+exports.Stream = Stream;
 /* IntSet Not a pure module */

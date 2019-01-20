@@ -24,7 +24,35 @@ let rec findFirstDuplicateSum =
   };
 };
 
-let solve2 = () =>
+let solve2 = () => {
   Utils.inputFileToList(day1Input)
   |> parseFrequencies
   |> findFirstDuplicateSum;
+};
+
+let generateSumsStream = frequencies => {
+  open Utils.Stream;
+  let asStream = ofList(frequencies);
+  let frequenciesCycle = cycle(asStream);
+  scanLeft((+), 0, frequenciesCycle);
+};
+
+let findFirstDuplicate = stream => {
+  open Utils.Stream;
+  let rec findDup = (visited, toVisit) =>
+    switch (hd(toVisit)) {
+    | None => None
+    | Some(a) =>
+      Utils.IntSet.mem(a, visited) ?
+        Some(a) : findDup(Utils.IntSet.add(a, visited), tl(toVisit))
+    };
+
+  findDup(Utils.IntSet.empty, stream);
+};
+
+let solve2Streams = () => {
+  Utils.inputFileToList(day1Input)
+  |> parseFrequencies
+  |> generateSumsStream
+  |> findFirstDuplicate;
+};
