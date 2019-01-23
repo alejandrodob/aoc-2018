@@ -31,10 +31,7 @@ let solve2 = () => {
 };
 
 let generateSumsStream = frequencies => {
-  open Utils.Stream;
-  let asStream = ofList(frequencies);
-  let frequenciesCycle = cycle(asStream);
-  scanLeft((+), 0, frequenciesCycle);
+  Utils.Stream.(frequencies |> ofList |> cycle |> scanLeft((+), 0));
 };
 
 let findFirstDuplicate = stream => {

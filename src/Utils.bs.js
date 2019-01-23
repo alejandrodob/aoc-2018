@@ -20,18 +20,6 @@ function inputFileToList(path) {
                 }))($$Array.to_list(input.split("\n")));
 }
 
-function scanLeft(fn, initial, list) {
-  if (list) {
-    var head = list[0];
-    return /* :: */[
-            Curry._2(fn, initial, head),
-            scanLeft(fn, Curry._2(fn, initial, head), list[1])
-          ];
-  } else {
-    return /* [] */0;
-  }
-}
-
 var compare = Caml_obj.caml_compare;
 
 var IntSet = $$Set.Make(/* module */[/* compare */compare]);
@@ -88,14 +76,14 @@ function cycle(stream) {
   return c(stream, stream);
 }
 
-function scanLeft$1(fn, initial, stream) {
+function scanLeft(fn, initial, stream) {
   var match = hd(stream);
   if (match !== undefined) {
     var head = Caml_option.valFromOption(match);
     return /* Stream */[
             Curry._2(fn, initial, head),
             (function (param) {
-                return scanLeft$1(fn, Curry._2(fn, initial, head), tl(stream));
+                return scanLeft(fn, Curry._2(fn, initial, head), tl(stream));
               })
           ];
   } else {
@@ -119,13 +107,12 @@ var Stream = /* module */[
   /* tl */tl,
   /* ofList */ofList,
   /* cycle */cycle,
-  /* scanLeft */scanLeft$1,
+  /* scanLeft */scanLeft,
   /* take */take
 ];
 
 exports.readFile = readFile;
 exports.inputFileToList = inputFileToList;
-exports.scanLeft = scanLeft;
 exports.IntSet = IntSet;
 exports.Stream = Stream;
 /* IntSet Not a pure module */
