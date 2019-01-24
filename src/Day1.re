@@ -1,11 +1,11 @@
-let day1Input = "src/day1-input.txt";
+let inputFile = "src/day1-input.txt";
 
 let parseFrequencies = frequencies => List.map(int_of_string, frequencies);
 
 let sumFrequencies = frequencies => List.fold_left((+), 0, frequencies);
 
 let solve1 = () =>
-  Utils.inputFileToList(day1Input) |> parseFrequencies |> sumFrequencies;
+  Utils.inputFileToList(inputFile) |> parseFrequencies |> sumFrequencies;
 
 let rec findFirstDuplicateSum =
         (~sums=Utils.IntSet.empty, ~lastSum=0, ~remaining=[], list) => {
@@ -25,7 +25,7 @@ let rec findFirstDuplicateSum =
 };
 
 let solve2 = () => {
-  Utils.inputFileToList(day1Input)
+  Utils.inputFileToList(inputFile)
   |> parseFrequencies
   |> findFirstDuplicateSum;
 };
@@ -48,7 +48,8 @@ let findFirstDuplicate = stream => {
 };
 
 let solve2Streams = () => {
-  Utils.inputFileToList(day1Input)
+  inputFile
+  |> Utils.inputFileToList
   |> parseFrequencies
   |> generateSumsStream
   |> findFirstDuplicate;

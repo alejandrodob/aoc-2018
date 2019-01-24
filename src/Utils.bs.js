@@ -2,12 +2,15 @@
 'use strict';
 
 var Fs = require("fs");
+var $$Map = require("bs-platform/lib/js/map.js");
 var $$Set = require("bs-platform/lib/js/set.js");
+var Char = require("bs-platform/lib/js/char.js");
 var List = require("bs-platform/lib/js/list.js");
 var $$Array = require("bs-platform/lib/js/array.js");
 var Curry = require("bs-platform/lib/js/curry.js");
 var Caml_obj = require("bs-platform/lib/js/caml_obj.js");
 var Caml_option = require("bs-platform/lib/js/caml_option.js");
+var Caml_string = require("bs-platform/lib/js/caml_string.js");
 
 function readFile(path) {
   return Fs.readFileSync(path, "utf8");
@@ -111,8 +114,31 @@ var Stream = /* module */[
   /* take */take
 ];
 
+function stringToCharList(s) {
+  var _i = s.length - 1 | 0;
+  var _l = /* [] */0;
+  while(true) {
+    var l = _l;
+    var i = _i;
+    if (i < 0) {
+      return l;
+    } else {
+      _l = /* :: */[
+        Caml_string.get(s, i),
+        l
+      ];
+      _i = i - 1 | 0;
+      continue ;
+    }
+  };
+}
+
+var CharMap = $$Map.Make([Char.compare]);
+
 exports.readFile = readFile;
 exports.inputFileToList = inputFileToList;
 exports.IntSet = IntSet;
 exports.Stream = Stream;
+exports.stringToCharList = stringToCharList;
+exports.CharMap = CharMap;
 /* IntSet Not a pure module */
