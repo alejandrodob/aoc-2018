@@ -8,6 +8,7 @@ var Char = require("bs-platform/lib/js/char.js");
 var List = require("bs-platform/lib/js/list.js");
 var $$Array = require("bs-platform/lib/js/array.js");
 var Curry = require("bs-platform/lib/js/curry.js");
+var $$String = require("bs-platform/lib/js/string.js");
 var Caml_obj = require("bs-platform/lib/js/caml_obj.js");
 var Caml_option = require("bs-platform/lib/js/caml_option.js");
 var Caml_string = require("bs-platform/lib/js/caml_string.js");
@@ -133,6 +134,12 @@ function stringToCharList(s) {
   };
 }
 
+function charListToString(cl) {
+  return $$String.concat("", List.map((function (param) {
+                    return $$String.make(1, param);
+                  }), cl));
+}
+
 var CharMap = $$Map.Make([Char.compare]);
 
 exports.readFile = readFile;
@@ -140,5 +147,6 @@ exports.inputFileToList = inputFileToList;
 exports.IntSet = IntSet;
 exports.Stream = Stream;
 exports.stringToCharList = stringToCharList;
+exports.charListToString = charListToString;
 exports.CharMap = CharMap;
 /* IntSet Not a pure module */

@@ -71,4 +71,7 @@ let stringToCharList = s => {
   exp(String.length(s) - 1, []);
 };
 
+let charListToString = cl =>
+  String.concat("", List.map(String.make(1), cl));
+
 module CharMap = Map.Make(Char);

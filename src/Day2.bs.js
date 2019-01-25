@@ -3,7 +3,9 @@
 
 var List = require("bs-platform/lib/js/list.js");
 var Curry = require("bs-platform/lib/js/curry.js");
+var Caml_obj = require("bs-platform/lib/js/caml_obj.js");
 var Caml_int32 = require("bs-platform/lib/js/caml_int32.js");
+var Caml_option = require("bs-platform/lib/js/caml_option.js");
 var Utils$Aoc2018 = require("./Utils.bs.js");
 var Caml_builtin_exceptions = require("bs-platform/lib/js/caml_builtin_exceptions.js");
 
@@ -58,13 +60,164 @@ function calculateChecksum(ids) {
   return Caml_int32.imul(numberOfIdsMatching(2, ids), numberOfIdsMatching(3, ids));
 }
 
-function solve(param) {
+function solve1(param) {
   return calculateChecksum(Utils$Aoc2018.inputFileToList(inputFile));
+}
+
+function hammingDistance(s1, s2) {
+  return List.fold_left2((function (acc, i1, i2) {
+                var match = i1 === i2;
+                if (match) {
+                  return acc;
+                } else {
+                  return acc + 1 | 0;
+                }
+              }), 0, Utils$Aoc2018.stringToCharList(s1), Utils$Aoc2018.stringToCharList(s2));
+}
+
+function arePrototypeBoxes(id1, id2) {
+  return hammingDistance(id1, id2) === 1;
+}
+
+function findCommonInList(_l1, _l2) {
+  while(true) {
+    var l2 = _l2;
+    var l1 = _l1;
+    var match_001 = /* :: */[
+      l2,
+      /* [] */0
+    ];
+    if (l1) {
+      var match = match_001;
+      if (match) {
+        var match$1 = match[0];
+        if (match$1) {
+          if (match[1]) {
+            throw [
+                  Caml_builtin_exceptions.invalid_argument,
+                  "Lists length do not match"
+                ];
+          } else {
+            var t2 = match$1[1];
+            var t1 = l1[1];
+            var h1 = l1[0];
+            var match$2 = Caml_obj.caml_equal(h1, match$1[0]);
+            if (match$2) {
+              return /* :: */[
+                      h1,
+                      findCommonInList(t1, t2)
+                    ];
+            } else {
+              _l2 = t2;
+              _l1 = t1;
+              continue ;
+            }
+          }
+        } else {
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "Lists length do not match"
+              ];
+        }
+      } else {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Lists length do not match"
+            ];
+      }
+    } else {
+      var match$3 = match_001;
+      if (match$3) {
+        if (match$3[0]) {
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "Lists length do not match"
+              ];
+        } else if (match$3[1]) {
+          throw [
+                Caml_builtin_exceptions.invalid_argument,
+                "Lists length do not match"
+              ];
+        } else {
+          return /* [] */0;
+        }
+      } else {
+        throw [
+              Caml_builtin_exceptions.invalid_argument,
+              "Lists length do not match"
+            ];
+      }
+    }
+  };
+}
+
+function findCommonChars(s1, s2) {
+  return Utils$Aoc2018.charListToString(findCommonInList(Utils$Aoc2018.stringToCharList(s1), Utils$Aoc2018.stringToCharList(s2)));
+}
+
+function findOpt(predicate, xs) {
+  try {
+    return Caml_option.some(List.find(predicate, xs));
+  }
+  catch (exn){
+    if (exn === Caml_builtin_exceptions.not_found) {
+      return undefined;
+    } else {
+      throw exn;
+    }
+  }
+}
+
+function findPrototypeBoxes(_ids) {
+  while(true) {
+    var ids = _ids;
+    if (ids) {
+      var head = ids[0];
+      var match = findOpt((function(head){
+          return function (id) {
+            return arePrototypeBoxes(head, id);
+          }
+          }(head)), ids);
+      if (match !== undefined) {
+        return /* tuple */[
+                head,
+                match
+              ];
+      } else {
+        _ids = ids[1];
+        continue ;
+      }
+    } else {
+      return undefined;
+    }
+  };
+}
+
+function checkIds(ids) {
+  var match = findPrototypeBoxes(ids);
+  if (match !== undefined) {
+    var match$1 = match;
+    return findCommonChars(match$1[0], match$1[1]);
+  } else {
+    return "";
+  }
+}
+
+function solve2(param) {
+  return checkIds(Utils$Aoc2018.inputFileToList(inputFile));
 }
 
 exports.inputFile = inputFile;
 exports.hasAnyLetterExactly = hasAnyLetterExactly;
 exports.numberOfIdsMatching = numberOfIdsMatching;
 exports.calculateChecksum = calculateChecksum;
-exports.solve = solve;
+exports.solve1 = solve1;
+exports.hammingDistance = hammingDistance;
+exports.arePrototypeBoxes = arePrototypeBoxes;
+exports.findCommonInList = findCommonInList;
+exports.findCommonChars = findCommonChars;
+exports.findOpt = findOpt;
+exports.findPrototypeBoxes = findPrototypeBoxes;
+exports.checkIds = checkIds;
+exports.solve2 = solve2;
 /* Utils-Aoc2018 Not a pure module */

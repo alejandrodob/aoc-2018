@@ -5,8 +5,11 @@ var Jest = require("@glennsl/bs-jest/src/jest.js");
 var Day2$Aoc2018 = require("./Day2.bs.js");
 
 describe("Day 2", (function () {
-        return Jest.test("Part 1", (function (param) {
-                      return Jest.Expect[/* toBe */2](5904, Jest.Expect[/* expect */0](Day2$Aoc2018.solve(/* () */0)));
+        Jest.test("Part 1", (function (param) {
+                return Jest.Expect[/* toBe */2](5904, Jest.Expect[/* expect */0](Day2$Aoc2018.solve1(/* () */0)));
+              }));
+        return Jest.test("Part 2", (function (param) {
+                      return Jest.Expect[/* toBe */2]("jiwamotgsfrudclzbyzkhlrvp", Jest.Expect[/* expect */0](Day2$Aoc2018.solve2(/* () */0)));
                     }));
       }));
 
